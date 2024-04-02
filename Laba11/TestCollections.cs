@@ -6,17 +6,23 @@ namespace Laba11;
 
 public class TestCollections
 {
+    //количество итераций на каждый тип элемента: (начало, середина, конец, несущ.)
     private static long IterationsCount = 500;
+
+    private Stopwatch _stopwatch;
     
+    /// <summary>
+    /// Измерение времени выполнения для типа элемента: (начало, середина, конец, несущ.)
+    /// </summary>
     private struct Measure
     {
-        public long findElementTimeQueue1;
-        public long findElementTimeQueue2;
-        public long findElementTimeInCollection3Value;
+        public long findElementTimeQueue1; // время поиска в коллектион 1
+        public long findElementTimeQueue2; // время поиска в коллектион 2
+        public long findElementTimeInCollection3Value; // время поиска в коллектион 3 по значению
         
-        public long findElementTimeInCollection3Key;
-        public long findElementTimeInCollection4Value;
-        public long findElementTimeInCollection4Key;
+        public long findElementTimeInCollection3Key; // время поиска в коллектион 3 по ключу
+        public long findElementTimeInCollection4Value; // время поиска в коллекции 4 по значению
+        public long findElementTimeInCollection4Key; // время поиска в коллекции 4 по ключу
     }
     
     //collection 1
@@ -28,8 +34,14 @@ public class TestCollections
     //collection 4
     public SortedDictionary<string, VideoGame> StringToVideoGame = new SortedDictionary<string, VideoGame>();
 
+    /// <summary>
+    /// Тестирование коллекций по заданию выполняется в конструкторе
+    /// </summary>
     public TestCollections()
     {
+        _stopwatch = new Stopwatch();
+        
+        //инициализируем элементы так, чтобы можно было понять какой элемент с каким индексом стоит
         for (int i = 0; i < 1000; i++)
         {
             VideoGame videoGame = new VideoGame(
@@ -46,7 +58,6 @@ public class TestCollections
 
         
         //розыск
-        
         VideoGame[] itemsToSearch = new VideoGame[]
         {
             new VideoGame("Игра1", 1, 15, new Game.IdNumber(1), Device.Mobile, 15),
@@ -58,6 +69,7 @@ public class TestCollections
         Measure[] results = new Measure[4];
 
         
+        //процесс измерения
         for (int i = 0; i < IterationsCount; i++)
         {
             for (int j = 0; j < itemsToSearch.Length; j++)
@@ -116,12 +128,15 @@ public class TestCollections
         
     }
 
-    
+    /// <summary>
+    ///  Измерение времени выполнения операции
+    /// </summary>
+    /// <param name="operation">Каллбек операции для выполнения</param>
+    /// <returns>время операции в тиках</returns>
     private long MeasureOperation(Action operation)
     {
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
+        _stopwatch.Restart();
         operation();
-        return stopwatch.ElapsedTicks;
+        return _stopwatch.ElapsedTicks;
     }
 }
