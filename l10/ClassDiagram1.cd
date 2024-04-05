@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="l10.Game">
+    <Position X="3.25" Y="1" Width="1.5" />
+    <NestedTypes>
+      <Class Name="l10.Game.IdNumber" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QAAKoAQAAAKAgAQEgAAAAAQAAAAEAAAAAAACABgAABA=</HashCode>
+      <FileName>Game.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Laba10.VideoGame">
+    <Position X="5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAACAEgAAgAAAAAAAAAAEAAAAABAKAAAAQBA=</HashCode>
+      <FileName>VideoGame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="l10.VRGame">
+    <Position X="7" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgBQAAACAAACAgAAAAAAAAAAEAAAAAAACACAAAAA=</HashCode>
+      <FileName>VRGame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Laba10.Device">
+    <Position X="9.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAgAAA=</HashCode>
+      <FileName>VideoGame.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -18,7 +18,8 @@ namespace l10
                     if (value < 0)
                     {
                         throw new ArgumentException("Id не может быть меньше 0");
-                    } else
+                    }
+                    else
                     {
                         number = value;
                     }
@@ -38,7 +39,7 @@ namespace l10
             {
                 return Number.ToString();
             }
-                        
+
             public override bool Equals(object? obj)
             {
                 if (obj is IdNumber n) return this.Number == n.Number;
@@ -58,7 +59,8 @@ namespace l10
                 if (value == null)
                 {
                     throw new ArgumentNullException(nameof(Name));
-                } else
+                }
+                else
                 {
                     _name = value;
                 }
@@ -69,17 +71,20 @@ namespace l10
 
         private uint _minimumPlayers;
         private uint _maximumPlayers;
-        public uint MinimumPlayers { 
-            get => _minimumPlayers; 
-            set { 
+        public uint MinimumPlayers
+        {
+            get => _minimumPlayers;
+            set
+            {
                 if (value == 0)
                 {
                     throw new ArgumentException("В игре не может быть 0 игроков. Иначе какой в ней смысл?");
-                } else
+                }
+                else
                 {
                     _minimumPlayers = value;
                 }
-            } 
+            }
         }
 
         public uint MaximumPlayers
@@ -90,10 +95,12 @@ namespace l10
                 if (value == 0)
                 {
                     throw new ArgumentException("В игре не может быть 0 игроков. Иначе какой в ней смысл?");
-                } else if (value < MinimumPlayers)
+                }
+                else if (value < MinimumPlayers)
                 {
                     throw new ArgumentException("Минимальное количество игроков не может быть больше максимального");
-                } else
+                }
+                else
                 {
                     _maximumPlayers = value;
                 }
@@ -170,8 +177,9 @@ namespace l10
             if (obj is not Game) return false;
 
             Game game2compare = (Game)obj;
-            return game2compare.Name == Name 
-                && game2compare.MinimumPlayers == MinimumPlayers 
+            return game2compare.Name == Name
+                && game2compare.Id.Number == Id.Number
+                && game2compare.MinimumPlayers == MinimumPlayers
                 && game2compare.MaximumPlayers == MaximumPlayers;
         }
 
@@ -185,7 +193,34 @@ namespace l10
             if (obj == null) return -1;
             if (obj is not Game) return -1;
             Game g = obj as Game;
-            return String.Compare(this.Name, g.Name);
+
+            if (g.Name == null)
+            {
+                return -1;
+            }
+            if (Name == null)
+            {
+                return 1;
+            }
+            int nameComparison = this.Name.CompareTo(g.Name);
+            if (nameComparison != 0) return nameComparison;
+
+            if (MinimumPlayers != g.MinimumPlayers)
+            {
+                return MinimumPlayers.CompareTo(g.MinimumPlayers);
+            }
+
+            if (MaximumPlayers != g.MaximumPlayers)
+            {
+                return MaximumPlayers.CompareTo(g.MaximumPlayers);
+            }
+
+            if (Id.Number != g.Id.Number)
+            {
+                return Id.Number.CompareTo(g.Id.Number);
+            }
+
+            return 0;
         }
 
         public object Clone() // метод клонирования объектов (ICloneable)

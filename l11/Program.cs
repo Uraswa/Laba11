@@ -7,7 +7,7 @@ namespace Laba11
     class Program
     {
         private const int StandartAmount = 10;
-        
+
         public static void Main()
         {
             Task1();
@@ -26,7 +26,7 @@ namespace Laba11
             {
                 ochered.Enqueue(new VRGame("Игра" + (i + 1), 1, 15, new Game.IdNumber(i + 1), Device.Mobile, 15, true, true));
             }
-            
+
             //запросы
             Request1Wrapper(ochered);
             Request2Wrapper(ochered);
@@ -34,44 +34,60 @@ namespace Laba11
 
             Console.WriteLine("Нажмите для продолжения....");
             Console.ReadKey();
-            
+
             Console.WriteLine("Вывод элементов");
 
             foreach (var item in ochered)
             {
-                Game game = (Game) item;
+                Game game = (Game)item;
                 game.ShowVirtual();
                 Console.WriteLine("------------------");
             }
-            
+
             Console.WriteLine("Нажмите для продолжения....");
             Console.ReadKey();
 
             //клонирование очероеди
             Console.WriteLine("Произошло клонирование....");
             Queue newOchered = (Queue)ochered.Clone();
-            
+
+            //для полного копирования
+            for(int i = 0; i < newOchered.Count; i++)
+            {
+                var deqItem = newOchered.Dequeue();
+                var clonedItem = ((VRGame)deqItem).Clone();
+                newOchered.Enqueue(clonedItem);
+            }
+
             //сортируем очередь
-            SortQueue(newOchered);
+            Queue sortedQueue = SortQueue(newOchered);
 
             VideoGame searchElement = new VRGame("Игра1", 1, 15, new Game.IdNumber(1), Device.Mobile, 15, true, true);
 
-            foreach (var item in ochered)
+            //проверка на наличие элемента
+            bool containtment = ochered.Contains(searchElement);
+            Console.WriteLine("Элемент: ");
+            searchElement.ShowVirtual();
+            if (containtment)
             {
-                if (item.Equals(searchElement) && item is Game)
-                {
-                    Game game = (Game) item;
-                    game.ShowVirtual();
-                    break;
-                }
+                Console.WriteLine("Найден!");
+            } else
+            {
+                Console.WriteLine("Не найден!");
             }
+                        
+            
+
+            Console.WriteLine("Нажмите для продолжения....");
+            Console.ReadKey();
         }
 
         /// <summary>
-        /// Так как метода Sort у очереди изначально нет, приходится писать таким образом
+        /// Так как метода Sort у очереди изначально нет, приходится писать таким образом. Сортировка создает новую очередь,
+        /// чтобы не потерять порядок исходных данных
         /// </summary>
         /// <param name="queue">Очередь для сортировки</param>
-        static void SortQueue(Queue queue)
+        static Queue SortQueue(Queue queue)
         {
             List<Game> listToSort = new List<Game>();
             foreach (var obj in queue)
@@ -80,13 +96,10 @@ namespace Laba11
             }
             listToSort.Sort();
 
-            queue.Clear();
-            foreach (var game in listToSort)
-            {
-                queue.Enqueue(game);
-            }
+            Queue newQueue = new Queue(listToSort);
+            return newQueue;
         }
-        
+
         /// <summary>
         /// Запрос из задания 1. Возвращает игры, в которых мин кол-во игроков >= minGreaterOrEqual
         /// </summary>
@@ -97,7 +110,7 @@ namespace Laba11
         {
             foreach (var item in collection)
             {
-                Game game = (Game) item;
+                Game game = (Game)item;
                 if (game.MinimumPlayers >= minGreaterOrEqual && minGreaterOrEqual <= game.MaximumPlayers)
                 {
                     yield return game;
@@ -113,11 +126,18 @@ namespace Laba11
         {
             uint minGreaterOrEqual = Helpers.Helpers.EnterUInt("Минимальное количество игроков", 1, uint.MaxValue);
 
-            Console.WriteLine($"Игры, минмальное количество игроков >= {minGreaterOrEqual.ToString()}");
+            Console.WriteLine($"Игры, минмальное количество игроков >= {minGreaterOrEqual.ToString()}:");
+            bool found = false;
             foreach (Game game in Request1(collection, minGreaterOrEqual))
             {
                 game.ShowVirtual();
+                found = true;
                 Console.WriteLine("-----------------------");
+            }
+
+            if (!found)
+            {
+                Console.WriteLine($"Игр с минимальным количеством игроков = {minGreaterOrEqual} не найдено.");
             }
         }
 
@@ -131,7 +151,7 @@ namespace Laba11
         {
             foreach (var item in collection)
             {
-                Game game = (Game) item;
+                Game game = (Game)item;
                 if (game is VideoGame videoGame && videoGame.Device == device)
                 {
                     yield return game;
@@ -162,10 +182,17 @@ namespace Laba11
                 device = Device.Console;
             }
 
-            Console.WriteLine($"\nИгры, в которые можно играть на {device}");
+            bool found = false;
+            Console.WriteLine($"\nИгры, в которые можно играть на {device}:");
             foreach (Game game in Request2(collection, device))
             {
+                found = true;
                 Console.WriteLine(game.Name);
+            }
+
+            if (!found)
+            {
+                Console.WriteLine($"Игр, в которые можно поиграть на {device} не найдено.");
             }
         }
 
@@ -178,7 +205,7 @@ namespace Laba11
         {
             foreach (var item in collection)
             {
-                Game game = (Game) item;
+                Game game = (Game)item;
                 if (game is VRGame vr && vr.AreVRGlassesRequired)
                 {
                     yield return game;
@@ -192,10 +219,17 @@ namespace Laba11
         /// <param name="collection">Коллекция для поиска</param>
         static void Request3Wrapper(IEnumerable collection)
         {
-            Console.WriteLine($"\nИгры, в которые можно играть в vr очках");
+            bool found = false;
+            Console.WriteLine($"\nИгры, в которые можно играть в vr очках:");
             foreach (Game game in Request3(collection))
             {
                 Console.WriteLine(game.Name);
+                found = true;
+            }
+
+            if (!found)
+            {
+                Console.WriteLine($"Игр, в которые можно поиграть в VR очках не найдено.");
             }
         }
 
@@ -204,13 +238,15 @@ namespace Laba11
         /// </summary>
         public static void Task2()
         {
+            Console.Clear();
+            Console.WriteLine("-----------ЗАДАНИЕ 2-----------");
             //заполнение листа
             List<VideoGame> list = new List<VideoGame>();
             for (int i = 0; i < StandartAmount; i++)
             {
                 list.Add(new VRGame("Игра" + (i + 1), 1, 15, new Game.IdNumber(i + 1), Device.Mobile, 15, true, true));
             }
-            
+
             //выполняем запросы уже к list
             Request1Wrapper(list);
             Request2Wrapper(list);
@@ -218,41 +254,41 @@ namespace Laba11
 
             Console.WriteLine("Нажмите для продолжения....");
             Console.ReadKey();
-            
+
             Console.WriteLine("Вывод элементов");
 
             foreach (var item in list)
             {
-                Game game = (Game) item;
+                Game game = (Game)item;
                 game.ShowVirtual();
                 Console.WriteLine("------------------");
             }
-            
+
             Console.WriteLine("Нажмите для продолжения....");
             Console.ReadKey();
 
             Console.WriteLine("Произошло клонирование....");
-            
+
             //клонирование через цикл foreach, так как метод Clone для List не определен
             List<VideoGame> newList = new List<VideoGame>();
             foreach (var videoGame in list)
             {
-                newList.Add(videoGame);
+                newList.Add((VideoGame)videoGame.Clone());
             }
-            
-            //сортировка
-            list.Sort();
+
+            //сортировка клонированого объекта, чтобы не потерять порядок исходных данных
+            newList.Sort();
 
             //поиска элемента
             VideoGame searchElement = new VRGame("Игра1", 1, 15, new Game.IdNumber(1), Device.Mobile, 15, true, true);
- 
-            foreach (var item in list)
+
+            int searchResult = newList.BinarySearch(searchElement);
+            if (searchResult >= 0)
             {
-                if (item.Equals(searchElement) && item is Game game)
-                {
-                    game.ShowVirtual();
-                    break;
-                }
+                newList[searchResult].ShowVirtual();
+            } else
+            {
+                Console.WriteLine("Элемент не найден");
             }
         }
 
@@ -260,7 +296,7 @@ namespace Laba11
         {
             var testColletions = new TestCollections();
         }
-        
-        
+
+
     }
 }

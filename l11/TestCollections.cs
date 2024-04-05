@@ -10,7 +10,7 @@ public class TestCollections
     private static long IterationsCount = 500;
 
     private Stopwatch _stopwatch;
-    
+
     /// <summary>
     /// Измерение времени выполнения для типа элемента: (начало, середина, конец, несущ.)
     /// </summary>
@@ -19,12 +19,12 @@ public class TestCollections
         public long findElementTimeQueue1; // время поиска в коллектион 1
         public long findElementTimeQueue2; // время поиска в коллектион 2
         public long findElementTimeInCollection3Value; // время поиска в коллектион 3 по значению
-        
+
         public long findElementTimeInCollection3Key; // время поиска в коллектион 3 по ключу
         public long findElementTimeInCollection4Value; // время поиска в коллекции 4 по значению
         public long findElementTimeInCollection4Key; // время поиска в коллекции 4 по ключу
     }
-    
+
     //collection 1
     public Queue<VideoGame> queue1 = new Queue<VideoGame>();
     //collection 2
@@ -40,7 +40,7 @@ public class TestCollections
     public TestCollections()
     {
         _stopwatch = new Stopwatch();
-        
+
         //инициализируем элементы так, чтобы можно было понять какой элемент с каким индексом стоит
         for (int i = 0; i < 1000; i++)
         {
@@ -56,19 +56,18 @@ public class TestCollections
             StringToVideoGame.Add(videoGame.ToString(), videoGame);
         }
 
-        
+
         //розыск
         VideoGame[] itemsToSearch = new VideoGame[]
         {
-            new VideoGame("Игра1", 1, 15, new Game.IdNumber(1), Device.Mobile, 15),
-            new VideoGame("Игра501", 1, 15, new Game.IdNumber(501), Device.Mobile, 15),
-            new VideoGame("Игра999", 1, 15, new Game.IdNumber(1000), Device.Mobile, 15),
+            (VideoGame)StringToVideoGame["Игра1"].Clone(),
+            (VideoGame)StringToVideoGame["Игра501"].Clone(),
+            (VideoGame)StringToVideoGame["Игра999"].Clone(),
             new VideoGame("Игра2000", 1, 15, new Game.IdNumber(2000), Device.Mobile, 15),
         };
 
         Measure[] results = new Measure[4];
 
-        
         //процесс измерения
         for (int i = 0; i < IterationsCount; i++)
         {
@@ -77,16 +76,38 @@ public class TestCollections
                 VideoGame item = itemsToSearch[j];
 
                 Measure measure = results[j];
-                
-                measure.findElementTimeQueue1 += MeasureOperation(() => queue1.Contains(item));
-                measure.findElementTimeQueue2 += MeasureOperation(() => queue2.Contains(item.ToString()));
 
-                measure.findElementTimeInCollection3Value += MeasureOperation(() => GameToVideoGame.ContainsValue(item));
-                measure.findElementTimeInCollection3Key += MeasureOperation(() => GameToVideoGame.ContainsKey(item));
-        
-                measure.findElementTimeInCollection4Value += MeasureOperation(() => StringToVideoGame.ContainsValue(item));
-                measure.findElementTimeInCollection4Key += MeasureOperation(() => StringToVideoGame.ContainsKey(item.ToString()));
+                _stopwatch.Restart();
+                bool contains = queue1.Contains(item);
+                //Console.WriteLine(contains);
+                measure.findElementTimeQueue1 += _stopwatch.ElapsedTicks;
 
+                string videoGameToString = item.ToString();
+                _stopwatch.Restart();
+                contains = queue2.Contains(videoGameToString);
+                //Console.WriteLine(contains);
+                measure.findElementTimeQueue2 += _stopwatch.ElapsedTicks;
+
+                _stopwatch.Restart();
+                contains = GameToVideoGame.ContainsValue(item);
+                //Console.WriteLine(contains);
+                measure.findElementTimeInCollection3Value += _stopwatch.ElapsedTicks;
+
+                _stopwatch.Restart();
+                contains = GameToVideoGame.ContainsKey(item.Base);
+                //Console.WriteLine(contains);
+                measure.findElementTimeInCollection3Key += _stopwatch.ElapsedTicks;
+
+                _stopwatch.Restart();
+                contains = StringToVideoGame.ContainsValue(item);
+                //Console.WriteLine(contains);
+                measure.findElementTimeInCollection4Value += _stopwatch.ElapsedTicks;
+
+                videoGameToString = item.ToString();
+                _stopwatch.Restart();
+                contains = StringToVideoGame.ContainsKey(videoGameToString);
+                //Console.WriteLine(contains);
+                measure.findElementTimeInCollection4Key += _stopwatch.ElapsedTicks;
 
                 results[j] = measure;
             }
@@ -98,10 +119,12 @@ public class TestCollections
             if (i == 0)
             {
                 elementKey = "первого";
-            } else if (i == 1)
+            }
+            else if (i == 1)
             {
                 elementKey = "серединного";
-            } else if (i == 2)
+            }
+            else if (i == 2)
             {
                 elementKey = "последнего";
             }
@@ -111,32 +134,20 @@ public class TestCollections
             }
 
             Measure measure = results[i];
-            
+
             Console.WriteLine("Результаты по поиску " + elementKey + " элемента в разных коллекциях (ср время в тиках)");
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в Queue<VideoGame> = {measure.findElementTimeQueue1 / IterationsCount}");
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в Queue<string> = {measure.findElementTimeQueue2 / IterationsCount}");
-            
+
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в SortedDictionary<Game, VideoGame> по значению = {measure.findElementTimeInCollection3Value / IterationsCount}");
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в SortedDictionary<Game, VideoGame> по ключу = {measure.findElementTimeInCollection3Key / IterationsCount}");
-            
+
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в SortedDictionary<string, VideoGame> по значению = {measure.findElementTimeInCollection4Value / IterationsCount}");
             Console.WriteLine($"Среднее время поиска {elementKey} элемента в SortedDictionary<string, VideoGame> по ключу = {measure.findElementTimeInCollection4Key / IterationsCount}");
 
             Console.WriteLine("------------------------------");
         }
-        
-        
-    }
 
-    /// <summary>
-    ///  Измерение времени выполнения операции
-    /// </summary>
-    /// <param name="operation">Каллбек операции для выполнения</param>
-    /// <returns>время операции в тиках</returns>
-    private long MeasureOperation(Action operation)
-    {
-        _stopwatch.Restart();
-        operation();
-        return _stopwatch.ElapsedTicks;
+
     }
 }

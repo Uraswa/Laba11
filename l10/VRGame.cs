@@ -5,7 +5,7 @@ namespace l10
 {
     public class VRGame : VideoGame
     {
-        
+
         public bool IsVRControllerRequired { get; private set; }
         public bool AreVRGlassesRequired { get; private set; }
 
@@ -24,7 +24,8 @@ namespace l10
             AreVRGlassesRequired = areVRGlassesRequired;
         }
 
-        public VRGame(VRGame game) : base(game) {
+        public VRGame(VRGame game) : base(game)
+        {
             IsVRControllerRequired = game.IsVRControllerRequired;
             AreVRGlassesRequired = game.AreVRGlassesRequired;
         }

@@ -55,7 +55,7 @@ namespace Laba10
             Device = Device.Mobile;
         }
 
-        public VideoGame(string name, uint minimumPlayers, uint maximumPlayers, IdNumber id,Device device, uint levelsCount) : base(name, minimumPlayers, maximumPlayers, id)
+        public VideoGame(string name, uint minimumPlayers, uint maximumPlayers, IdNumber id, Device device, uint levelsCount) : base(name, minimumPlayers, maximumPlayers, id)
         {
             LevelCount = levelsCount;
             Device = device;
@@ -91,10 +91,12 @@ namespace Laba10
             if (deviceType == 1)
             {
                 Device = Device.Mobile;
-            } else if (deviceType == 2)
+            }
+            else if (deviceType == 2)
             {
                 Device = Device.Pc;
-            } else if (deviceType == 3)
+            }
+            else if (deviceType == 3)
             {
                 Device = Device.Console;
             }
@@ -131,9 +133,9 @@ namespace Laba10
                 && (obj is VideoGame videoGame)
                 && LevelCount == videoGame.LevelCount
                 && Device == videoGame.Device;
-                
+
         }
-        
+
         public new object Clone() // метод клонирования объектов (ICloneable)
         {
             return new VideoGame(Name, MinimumPlayers, MaximumPlayers, new IdNumber(Id.Number), Device, LevelCount);
